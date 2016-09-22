@@ -5,13 +5,32 @@
         totalImageCount = 0,
         renderedCount = 0,
         galleryPhotos = [],
-        DEFAULT_PAGE_SIZE = 10;
+        DEFAULT_PAGE_SIZE = 10,
+        ieVersion = getIEVersion(),
+        ie = ieVersion > 0.0,
+        allowHeaders = true;
+
+    // Detect IE Version - Microsoft Recommended way
+    function getIEVersion() {
+        var version = -1;
+
+        if (navigator.appName == 'Microsoft Internet Explorer') {
+            var ua = navigator.userAgent,
+            re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+
+            if (re.exec(ua) != null) {
+                version = parseFloat(RegExp.$1);
+            }
+        }
+        return version;
+    }
 
     function createRequest() {
         var xhr;
 
-        if (window.XDomainRequest) {
+        if (window.XDomainRequest && ieVersion <= 9.0) {
             xhr = new XDomainRequest();
+            allowHeaders = false;
         } else if (window.XMLHttpRequest) {
             xhr = new XMLHttpRequest();
         } else {
@@ -25,6 +44,7 @@
                     console.log('ieXMLHttpVersion ' + ieXMLHttpVersions[i] + ' is not supported by this browser');
                 }
             }
+            allowHeaders = false;
         }
 
         return xhr;
@@ -35,13 +55,12 @@
 
         xhr.open(method, url, true);
 
-        if (typeof headers == 'object') {
+        if (typeof headers == 'object' && allowHeaders) {
             for (var key in headers) {
                 xhr.setRequestHeader(key, headers[key]);
             }
         }
 
-        xhr.send();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 var callback = xhr.status == 200 ? successFn : errorFn,
@@ -56,6 +75,8 @@
                 callback && callback(response);
             }
         };
+
+        xhr.send();
     }
 
     function processApiResponse(response) {
