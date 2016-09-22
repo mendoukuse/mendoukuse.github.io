@@ -238,6 +238,7 @@
             photoTitle.innerHTML = imageInfo.title || 'Untitled Image';
 
             lightbox.setAttribute('data-index', currentIndex);
+            lightbox.className = 'loading-placeholder';
             lightboxImg = lightbox.getElementsByTagName('img')[0];
             lightboxImg.src = imageInfo.link;
         } else {
@@ -247,6 +248,7 @@
 
             lightbox = document.createElement('div');
             lightbox.id = 'lightbox-image';
+            lightbox.className = 'loading-placeholder';
             lightbox.setAttribute('data-index', currentIndex);
 
             lightboxImg = document.createElement('img');
@@ -319,9 +321,6 @@
 
         lightboxImg.src = imageInfo.link;
         lightbox.setAttribute('data-index', nextIndex);
-
-        lightboxState.currentIndex = nextIndex;
-        lightboxState.currentImage = imageInfo;
     }
 
     function hideImage(e) {

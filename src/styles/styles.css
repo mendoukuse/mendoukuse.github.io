@@ -191,16 +191,28 @@ a:visited {
     text-align: center;
 }
 
-#lightbox-image.placeholder {
+#lightbox-image.placeholder,
+#lightbox-image.loading-placeholder {
     background: rgba(255, 255, 255, 0.8);
 }
-#lightbox-image.placeholder img {
+#lightbox-image.placeholder img,
+#lightbox-image.loading-placeholder img {
     visibility: hidden;
 }
 #lightbox-image.placeholder:after,
 #lightbox-image.placeholder::after {
     display: block;
     content: 'Image Currently Unavailable';
+}
+#lightbox-image.loading-placeholder:after,
+#lightbox-image.loading-placeholder::after {
+    display: block;
+    content: 'Loading Image...';
+}
+#lightbox-image.placeholder:after,
+#lightbox-image.placeholder::after,
+#lightbox-image.loading-placeholder:after,
+#lightbox-image.loading-placeholder::after {
     width: 100%;
     position: absolute;
     top: 50%;
