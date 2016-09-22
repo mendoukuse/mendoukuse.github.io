@@ -8,7 +8,8 @@
         DEFAULT_PAGE_SIZE = 10,
         ieVersion = getIEVersion(),
         ie = ieVersion > 0.0,
-        allowHeaders = true;
+        allowHeaders = true,
+        xdr;
 
     // Detect IE Version - Microsoft Recommended way
     function getIEVersion() {
@@ -31,6 +32,7 @@
         if (window.XDomainRequest && ieVersion <= 9.0) {
             xhr = new XDomainRequest();
             allowHeaders = false;
+            xdr = true;
         } else if (window.XMLHttpRequest) {
             xhr = new XMLHttpRequest();
         } else {
@@ -61,20 +63,32 @@
             }
         }
 
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                var callback = xhr.status == 200 ? successFn : errorFn,
-                    response;
-
+        if (xdr) {
+            xhr.onload = function() {
                 try {
-                    response = JSON.parse(xhr.response || xhr.responseText);
+                    var response = JSON.parse(xhr.responseText);
+                    return successFn && successFn(response.data);
                 } catch (e) {
                     errorFn && errorFn();
                 }
-
-                callback && callback(response);
             }
-        };
+            xhr.onerror = errorFn;
+        } else {
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var callback = xhr.status == 200 ? successFn : errorFn,
+                        response;
+
+                    try {
+                        response = JSON.parse(xhr.response || xhr.responseText);
+                    } catch (e) {
+                        callback = errorFn;
+                    }
+
+                    callback && callback(response);
+                }
+            };
+        }
 
         xhr.send();
     }
