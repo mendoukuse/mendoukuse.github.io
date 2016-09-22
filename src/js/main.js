@@ -63,29 +63,22 @@
             }
         }
 
-        if (xdr) {
-            xhr.onload = function() {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    return successFn && successFn(response.data);
-                } catch (e) {
-                    errorFn && errorFn();
-                }
+        function handleResponse() {
+            try {
+                var response = JSON.parse(xhr.responseText);
+                return successFn && successFn(response);
+            } catch (e) {
+                errorFn && errorFn();
             }
+        }
+
+        if (xdr) {
+            xhr.onload = handleResponse;
             xhr.onerror = errorFn;
         } else {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
-                    var callback = xhr.status == 200 ? successFn : errorFn,
-                        response;
-
-                    try {
-                        response = JSON.parse(xhr.response || xhr.responseText);
-                    } catch (e) {
-                        callback = errorFn;
-                    }
-
-                    callback && callback(response);
+                    handleResponse();
                 }
             };
         }
@@ -94,11 +87,15 @@
     }
 
     function processApiResponse(response) {
-        if (typeof response == 'object' && response.data) {
+        if (typeof response == 'object' && isValidApiResponseData(response.data)) {
             render(response.data);
         } else {
             handleApiError();
         }
+    }
+
+    function isValidApiResponseData(data) {
+        return typeof data == 'object' && !data.error;
     }
 
     function handleApiError(response) {
