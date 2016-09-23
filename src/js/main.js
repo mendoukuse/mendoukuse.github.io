@@ -29,7 +29,7 @@
     function createRequest() {
         var xhr;
 
-        if (window.XDomainRequest && ieVersion <= 9.0) {
+        if (window.XDomainRequest && ieVersion < 10.0) {
             xhr = new XDomainRequest();
             allowHeaders = false;
             xdr = true;
@@ -74,7 +74,6 @@
 
         if (xdr) {
             xhr.onload = handleResponse;
-            xhr.onerror = errorFn;
         } else {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
@@ -179,6 +178,10 @@
         parentEl.appendChild(page);
     }
 
+    function formatImageLink(link) {
+        return link.replace(/^http:\/\//gi, 'https://');
+    }
+
     function createImage(data, index) {
         var imageContainer = document.createElement('div'),
             imageOverlay = document.createElement('div'),
@@ -190,7 +193,7 @@
         imageContainer.setAttribute('data-id', data.id);
         imageContainer.setAttribute('data-index', index);
         imageContainer.style['background-color'] = 'rgba(0, 0, 0, ' + (Math.random()) + ')';
-        imageContainer.style['background-image'] = 'url(' + data.link + ')';
+        imageContainer.style['background-image'] = 'url(' + formatImageLink(data.link) + ')';
         imageContainer.style['background-repeat'] = 'no-repeat';
         imageContainer.style['background-position'] = 'center center';
         imageContainer.style['background-size'] = 'cover';
@@ -251,7 +254,7 @@
             lightbox.setAttribute('data-index', currentIndex);
             lightbox.className = 'loading-placeholder';
             lightboxImg = lightbox.getElementsByTagName('img')[0];
-            lightboxImg.src = imageInfo.link;
+            lightboxImg.src = formatImageLink(imageInfo.link);
         } else {
             photoTitle = document.createElement('h3');
             photoTitle.id = 'lightbox-image-title';
@@ -263,7 +266,8 @@
             lightbox.setAttribute('data-index', currentIndex);
 
             lightboxImg = document.createElement('img');
-            lightboxImg.src = imageInfo.link;
+
+            lightboxImg.src = formatImageLink(imageInfo.link);
             lightboxImg.onload = displayLightboxImage;
             lightboxImg.onerror = displayLightboxImagePlaceholder;
 
@@ -291,7 +295,7 @@
             lightboxContainer.appendChild(arrowRight);
         }
 
-        document.body.className = 'visible-lightbox';
+        document.body.className = 'visible-lightbox' + (ie && ieVersion < 10.0 ? ' ie-lightbox' : '');
         window.addEventListener('keyup', handleKeyPress, true);
     }
 
@@ -330,7 +334,7 @@
 
         photoTitle.innerHTML = imageInfo.title || 'Untitled Image';
 
-        lightboxImg.src = imageInfo.link;
+        lightboxImg.src = formatImageLink(imageInfo.link);
         lightbox.setAttribute('data-index', nextIndex);
     }
 

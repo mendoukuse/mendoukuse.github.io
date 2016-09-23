@@ -75,8 +75,8 @@ a:visited {
     max-width: 370px;
     padding: 5px 20px;
     background: rgba(0, 0, 0, 0.9);
-    font-size: 14px;
-    line-height: 16px;
+    font-size: 15px;
+    line-height: 17px;
 }
 #gallery-info-popup ul {
     padding: 0 0 0 15px;
@@ -178,7 +178,6 @@ a:visited {
     cursor: pointer;
     z-index: 1;
 }
-
 #lightbox-image {
     height: 500px;
     width: 500px;
@@ -240,16 +239,20 @@ a:visited {
     position: absolute;
     top: 50%;
     margin-top: -25px;
-    background: url(../images/white-chevron.svg) no-repeat center center;
-    background-size: cover;
     cursor: pointer;
 }
 #left-arrow {
     left: 15px;
-    transform: rotate(180deg);
+    background: url(../images/white-chevron-left.svg) no-repeat center center;
+    background-size: cover;
 }
 #right-arrow {
     right: 15px;
+    background: url(../images/white-chevron.svg) no-repeat center center;
+    background-size: cover;
+}
+.ie-lightbox #lightbox-image img {
+    width: 500px;
 }
 
 @media screen and (max-width: 600px), screen and (max-height: 600px) {
